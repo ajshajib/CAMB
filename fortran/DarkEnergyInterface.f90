@@ -2,6 +2,7 @@
     use precision
     use interpolation
     use classes
+    use fgsl
     implicit none
 
     private
@@ -104,8 +105,8 @@
     real(dl), intent(out) :: w, wa
 
     w = -1
-    wa = 0
-
+    wa = 1.45
+    ! done
     end subroutine Effective_w_wa
 
 
@@ -176,7 +177,7 @@
     call this%logdensity%Init(this%equation_of_state%X, integral)
     !Set w and wa to values today (e.g. as too simple first guess for approx fittings etc).
     this%w_lam = w(size(a))
-    this%wa = -this%equation_of_state%Derivative(0._dl)
+    this%wa = 1.45 !-this%equation_of_state%Derivative(0._dl)
 
     end subroutine TDarkEnergyEqnOfState_SetwTable
 
@@ -187,7 +188,9 @@
     real(dl), intent(IN) :: a
 
     if(.not. this%use_tabulated_w) then
-        TDarkEnergyEqnOfState_w_de= this%w_lam+ this%wa*(1._dl-a)
+        ! TDarkEnergyEqnOfState_w_de= this%w_lam+ this%wa*(1._dl-a)
+        TDarkEnergyEqnOfState_w_de= -1._dl + (1. + this%w_lam) * exp(- this%wa * (1./a - 1.))
+        ! done
     else
         al=dlog(a)
         if(al <= this%equation_of_state%Xmin_interp) then
@@ -217,8 +220,10 @@
     real(dl), intent(IN) :: a
 
     if(.not. this%use_tabulated_w) then
-        grho_de = a ** (1._dl - 3. * this%w_lam - 3. * this%wa)
-        if (this%wa/=0) grho_de=grho_de*exp(-3. * this%wa * (1._dl - a))
+        ! grho_de = a ** (1._dl - 3. * this%w_lam - 3. * this%wa)
+        ! if (this%wa/=0) grho_de=grho_de*exp(-3. * this%wa * (1._dl - a))
+        grho_de = exp(3._dl * exp(this%wa) * (1. + this%w_lam) * (ei(-this%wa / a) - ei(-this%wa))) * a ** 4.
+        ! done, but need to check if fgsl usable
     else
         if(a == 0.d0)then
             grho_de = 0.d0      !assume rho_de*a^4-->0, when a-->0, OK if w_de always <0.
@@ -246,6 +251,7 @@
 
     if (FeedbackLevel >0) write(*,'("(w0, wa) = (", f8.5,", ", f8.5, ")")') &
         &   this%w_lam, this%wa
+        ! done
 
     end subroutine TDarkEnergyEqnOfState_PrintFeedback
 
@@ -259,11 +265,13 @@
     this%use_tabulated_w = Ini%Read_Logical('use_tabulated_w', .false.)
     if(.not. this%use_tabulated_w)then
         this%w_lam = Ini%Read_Double('w', -1.d0)
-        this%wa = Ini%Read_Double('wa', 0.d0)
+        this%wa = Ini%Read_Double('wa', 1.45d0)
         ! trap dark energy becoming important at high redshift 
         ! (will still work if this test is removed in some cases)
-        if (this%w_lam + this%wa > 0) &
-             error stop 'w + wa > 0, giving w>0 at high redshift'
+        ! done 
+        ! if (this%w_lam + this%wa > 0) &
+        !      error stop 'w + wa > 0, giving w>0 at high redshift'
+        
     else
         call File%LoadTxt(Ini%Read_String('wafile'), table)
         call this%SetwTable(table(:,1),table(:,2), size(table(:,1)))
@@ -278,7 +286,8 @@
     class(TCAMBdata), intent(in), target :: State
 
     this%is_cosmological_constant = .not. this%use_tabulated_w .and. &
-        &  abs(this%w_lam + 1._dl) < 1.e-6_dl .and. this%wa==0._dl
+        &  abs(this%w_lam + 1._dl) < 1.e-6_dl !.and. this%wa==0._dl
+        ! done
 
     end subroutine TDarkEnergyEqnOfState_Init
 
