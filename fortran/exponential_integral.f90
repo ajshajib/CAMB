@@ -1,22 +1,21 @@
-program expint_E1
+module exponential_integral
     implicit none
-    double precision :: x, result
-
-    ! Example usage
-    x = 1.0
-    result = expint_E1(x)
-    print *, "E1(", x, ") = ", result
+    private
+    public :: expint_E1
 
 contains
 
-    double precision function expint_E1(x)
+    double precision function expint_E1(val)
         implicit none
-        double precision, intent(in) :: x
+        double precision, intent(in) :: val
+        double precision :: x
         double precision :: sum, term, log_x
         integer :: n
 
-        if (x > 11.) then
+        if (val > 11.) then
             x = 11.
+        else
+            x = val
         end if
 
         sum = 0.0d0
@@ -36,4 +35,4 @@ contains
         expint_E1 = -0.57721566490153286060d0 - log_x - sum
     end function expint_E1
 
-end program expint_E1
+end module exponential_integral

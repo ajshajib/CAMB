@@ -518,7 +518,7 @@
     function omega_m(aa,om_m0,om_v0,wval,waval)
     real(dl) omega_m,omega_t,om_m0,om_v0,aa,wval,waval,Qa2
     ! Qa2= aa**(-1.0-3.0*(wval+waval))*dexp(-3.0*(1-aa)*waval)
-    Qa2 = aa ** 2 * dexp(3.0 * dexp(waval) * (1. + wval) * (expint_E1(waval) - expint_E1(waval / a)))
+    Qa2 = aa ** 2 * dexp(3.0 * dexp(waval) * (1. + wval) * (expint_E1(waval) - expint_E1(waval / aa)))
     omega_t=1.0+(om_m0+om_v0-1.0)/(1-om_m0-om_v0+om_v0*Qa2+om_m0/aa)
     omega_m=omega_t*om_m0/(om_m0+om_v0*aa*Qa2)
     end function omega_m
@@ -530,7 +530,7 @@
     function omega_v(aa,om_m0,om_v0,wval,waval)
     real(dl) aa,omega_v,om_m0,om_v0,omega_t,wval,waval,Qa2
     ! Qa2= aa**(-1.0-3.0*(wval+waval))*dexp(-3.0*(1-aa)*waval)
-    Qa2 = aa ** 2 * dexp(3.0 * dexp(waval) * (1. + wval) * (expint_E1(waval) - expint_E1(waval / a)))
+    Qa2 = aa ** 2 * dexp(3.0 * dexp(waval) * (1. + wval) * (expint_E1(waval) - expint_E1(waval / aa)))
     omega_t=1.0+(om_m0+om_v0-1.0)/(1-om_m0-om_v0+om_v0*Qa2+om_m0/aa)
     omega_v=omega_t*om_v0*Qa2/(om_v0*Qa2+om_m0/aa)
     end function omega_v
