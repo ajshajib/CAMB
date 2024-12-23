@@ -85,9 +85,10 @@
         if (this%use_tabulated_w) then
             if (any(this%equation_of_state%F<-1) .and. any(this%equation_of_state%F>-1)) &
                 error stop 'Fluid dark energy model does not allow w crossing -1'
-        elseif (this%wa/=0 .and. &
-            ((1+this%w_lam < -1.e-6_dl) .or. 1+this%w_lam + this%wa < -1.e-6_dl)) then
-            error stop 'Fluid dark energy model does not allow w crossing -1'
+        ! elseif (this%wa/=0 .and. &
+        !     ((1+this%w_lam < -1.e-6_dl) .or. 1+this%w_lam + this%wa < -1.e-6_dl)) then
+        !     error stop 'Fluid dark energy model does not allow w crossing -1'
+        ! done 
         end if
         this%num_perturb_equations = 2
     end if
@@ -122,6 +123,7 @@
     integer, intent(in) :: w_ix
     real(dl) Hv3_over_k, loga
 
+    error stop 'perturbation evolution not implemented for this dark energy model'
     Hv3_over_k =  3*adotoa* y(w_ix + 1) / k
     !density perturbation
     ayprime(w_ix) = -3 * adotoa * (this%cs2_lam - w) *  (y(w_ix) + (1 + w) * Hv3_over_k) &
