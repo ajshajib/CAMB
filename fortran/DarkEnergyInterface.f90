@@ -2,7 +2,7 @@
     use precision
     use interpolation
     use classes
-    use fgsl
+    use exponential_integral
     implicit none
 
     private
@@ -222,7 +222,7 @@
     if(.not. this%use_tabulated_w) then
         ! grho_de = a ** (1._dl - 3. * this%w_lam - 3. * this%wa)
         ! if (this%wa/=0) grho_de=grho_de*exp(-3. * this%wa * (1._dl - a))
-        grho_de = exp(3._dl * exp(this%wa) * (1. + this%w_lam) * (ei(-this%wa / a) - ei(-this%wa))) * a ** 4.
+        grho_de = dexp(3._dl * dexp(this%wa) * (1. + this%w_lam) * (expint_E1(this%wa) - expint_E1(this%wa / a))) * a ** 4.
         ! done, but need to check if fgsl usable
     else
         if(a == 0.d0)then
