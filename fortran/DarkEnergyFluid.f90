@@ -123,7 +123,6 @@
     integer, intent(in) :: w_ix
     real(dl) Hv3_over_k, loga
 
-    error stop 'perturbation evolution not implemented for this dark energy model'
     Hv3_over_k =  3*adotoa* y(w_ix + 1) / k
     !density perturbation
     ayprime(w_ix) = -3 * adotoa * (this%cs2_lam - w) *  (y(w_ix) + (1 + w) * Hv3_over_k) &
@@ -135,7 +134,9 @@
             ayprime(w_ix) = ayprime(w_ix) - adotoa*this%equation_of_state%Derivative(loga)* Hv3_over_k
         end if
     elseif (this%wa/=0) then
-        ayprime(w_ix) = ayprime(w_ix) + Hv3_over_k*this%wa*adotoa*a
+        ! ayprime(w_ix) = ayprime(w_ix) + Hv3_over_k*this%wa*adotoa*a
+        ayprime(w_ix) = ayprime(w_ix) - Hv3_over_k * adotoa * (1. + w) * this%wa / a
+        ! done
     end if
     !velocity
     if (abs(w+1) > 1e-6) then

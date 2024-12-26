@@ -1341,7 +1341,7 @@
         DEALLOCATE(cosm_lcdm%growth)
         DEALLOCATE(cosm_lcdm%a_growth)
         cosm_lcdm%w=-1.
-        cosm_lcdm%wa=0.
+        cosm_lcdm%wa=1.45
         cosm_lcdm%om_v=1.-cosm%om_m !Enforce flatness
 
         !Needs to use grow_int explicitly here for LCDM model to avoid growth HM_tables
@@ -2467,7 +2467,8 @@
     REAL(dl) :: a
 
     a=1./(1.+z)
-    X_de=(a**(-3*(1+cosm%w+cosm%wa)))*exp(-3*cosm%wa*(1-a))
+    ! X_de=(a**(-3*(1+cosm%w+cosm%wa)))*exp(-3*cosm%wa*(1-a))
+    X_de = dexp(3.0 * dexp(cosm%wa) * (1. + cosm%w) * (expint_E1(cosm%wa) - expint_E1(cosm%wa / a)))
 
     END FUNCTION X_de
 
@@ -2480,7 +2481,8 @@
     REAL(dl) :: a
 
     a=1./(1.+z)
-    w_de_hm=cosm%w+(1-a)*cosm%wa
+    ! w_de_hm=cosm%w+(1-a)*cosm%wa
+    w_de_hm = -1.0 + (1.0 + cosm%w) * exp(-cosm%wa * z) 
 
     END FUNCTION w_de_hm
 
