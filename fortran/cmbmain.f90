@@ -1140,7 +1140,7 @@
     real(dl) atol
 
     atol=tol/exp(CP%Accuracy%AccuracyBoost*CP%Accuracy%IntTolBoost-1)
-    if (CP%Transfer%high_precision) atol=atol/1000 !CHECKTHIS
+    if (CP%Transfer%high_precision) atol=atol/100 !CHECKTHIS
 
     ind=1
     call initial(EV,y, tau)

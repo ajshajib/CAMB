@@ -8,7 +8,7 @@
     real(dl) ratio
 
     type(CAMBparams) P !defined in model.f90
-    type(CAMBdata) results !contains computed quantities and functions for results (results.f90)
+    type(CAMBdata) res !contains computed quantities and functions for results (results.f90)
 
     !Need to set default classes for initial power spectrum, recombination etc.
     call CAMB_SetDefParams(P)
@@ -19,11 +19,11 @@
 
     P%ombh2  = .0222_dl
     P%omk  = 0._dl
-    P%H0      = 67._dl
+    P%H0      = 70._dl
     select type(InitPower=>P%InitPower)
     class is (TInitialPowerLaw)
         InitPower%As = 2.1e-9
-        InitPower%ns  = 1
+        InitPower%ns  = 0.96
         InitPower%r = 1
         !we don't use r here since we generate the Cls separately
         !so set to 1, and then put in the ratio after calculating the Cls
@@ -31,17 +31,18 @@
 
     P%WantScalars = .true.
     P%WantTensors = .true.
+    P%WantTransfer = .true.
 
     P%Max_l=2500
     P%Max_eta_k=6000
     P%Max_l_tensor=200
     P%Max_eta_k_tensor=500
 
-    call CAMB_GetResults(results, P)
+    call CAMB_GetResults(res, P)
 
     ratio =0.1
-    associate(CL_scalar => results%CLData%CL_scalar, &
-        CL_tensor => results%CLData%CL_tensor)
+    associate(CL_scalar => res%CLData%CL_scalar, &
+        CL_tensor => res%CLData%CL_tensor)
         do l=2,P%Max_l
             !print out scalar and tensor temperature, then sum. Units are dimensionless here.
             if (l <= P%Max_l_tensor) then
